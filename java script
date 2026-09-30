@@ -1,0 +1,123 @@
+// script.js
+const questions = [
+  {
+    question: "What does HTML stand for?",
+    options: [
+      "Hyper Trainer Markup Language",
+      "HyperText Markup Language",
+      "HighText Machine Language",
+      "Hyperlink and Text Markup Language"
+    ],
+    answer: 1
+  },
+  {
+    question: "Which language is used for styling web pages?",
+    options: ["HTML", "CSS", "JavaScript", "Python"],
+    answer: 1
+  },
+  {
+    question: "Which company developed JavaScript?",
+    options: ["Microsoft", "Google", "Netscape", "Apple"],
+    answer: 2
+  },
+  {
+    question: "Which tag is used to create a link in HTML?",
+    options: ["<a>", "<link>", "<href>", "<url>"],
+    answer: 0
+  },
+  {
+    question: "What is the correct way to declare a variable in JavaScript?",
+    options: ["var x = 5;", "variable x = 5;", "x := 5;", "let x = 5;"],
+    answer: 3
+  }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+let selectedAnswer = null;
+
+const questionNumberEl = document.getElementById("question-number");
+const questionTextEl = document.getElementById("question-text");
+const optionsContainer = document.getElementById("options-container");
+const nextBtn = document.getElementById("next-btn");
+const resultBox = document.getElementById("result-box");
+const quizBox = document.getElementById("quiz-box");
+const scoreText = document.getElementById("score-text");
+const restartBtn = document.getElementById("restart-btn");
+
+function showQuestion() {
+  const currentQuestion = questions[currentQuestionIndex];
+  questionNumberEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+  questionTextEl.textContent = currentQuestion.question;
+
+  optionsContainer.innerHTML = "";
+  selectedAnswer = null;
+
+  currentQuestion.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.className = "option-btn";
+    button.textContent = option;
+    button.addEventListener("click", () => selectAnswer(button, index));
+    optionsContainer.appendChild(button);
+  });
+
+  nextBtn.classList.add("hidden");
+}
+
+function selectAnswer(button, index) {
+  const currentQuestion = questions[currentQuestionIndex];
+  const buttons = document.querySelectorAll(".option-btn");
+
+  buttons.forEach(btn => btn.classList.remove("selected"));
+
+  button.classList.add("selected");
+  selectedAnswer = index;
+
+  buttons.forEach((btn, i) => {
+    if (i === currentQuestion.answer) {
+      btn.classList.add("correct");
+    }
+  });
+
+  if (index === currentQuestion.answer) {
+    score++;
+  } else {
+    buttons[currentQuestion.answer].classList.add("correct");
+    button.classList.add("wrong");
+  }
+
+  buttons.forEach(btn => {
+    btn.disabled = true;
+  });
+
+  nextBtn.classList.remove("hidden");
+}
+
+function nextQuestion() {
+  currentQuestionIndex++;
+
+  if (currentQuestionIndex < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  quizBox.classList.add("hidden");
+  resultBox.classList.remove("hidden");
+  scoreText.textContent = `Your score: ${score} / ${questions.length}`;
+}
+
+function restartQuiz() {
+  currentQuestionIndex = 0;
+  score = 0;
+  quizBox.classList.remove("hidden");
+  resultBox.classList.add("hidden");
+  showQuestion();
+}
+
+nextBtn.addEventListener("click", nextQuestion);
+restartBtn.addEventListener("click", restartQuiz);
+
+showQuestion();
